@@ -35,7 +35,7 @@ window.Input = (function () {
   }
 
   function reset() {
-    keys = {};
+    for (var k in keys) keys[k] = false;   // se limpia en el lugar: la ref se comparte
     touch.left = touch.right = touch.gas = touch.brake = false;
     drag.active = false; drag.id = null; drag.value = 0;
   }
