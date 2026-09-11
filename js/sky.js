@@ -54,11 +54,11 @@ window.Sky = (function () {
       sun.castShadow = true;
       sun.shadow.mapSize.set(2048, 2048);
       sun.shadow.camera.near = 1;
-      sun.shadow.camera.far = 260;
-      sun.shadow.camera.left = -34;
-      sun.shadow.camera.right = 34;
-      sun.shadow.camera.top = 34;
-      sun.shadow.camera.bottom = -34;
+      sun.shadow.camera.far = 320;
+      sun.shadow.camera.left = -62;
+      sun.shadow.camera.right = 62;
+      sun.shadow.camera.top = 62;
+      sun.shadow.camera.bottom = -62;
       sun.shadow.bias = -0.0012;
       sun.shadow.normalBias = 0.035;
     }
@@ -78,8 +78,10 @@ window.Sky = (function () {
         group.position.set(camX, 0, camZ);
         ground.position.x = camX;
         ground.position.z = camZ;
-        sun.position.set(camX - 60, 90, camZ + 46);
-        sun.target.position.set(camX, 0, camZ + 12);
+        // el foco de sombras se adelanta al auto para que los rivales
+        // tambien proyecten antes de llegar
+        sun.position.set(camX - 70, 105, camZ + 100);
+        sun.target.position.set(camX, 0, camZ + 45);
         sun.target.updateMatrixWorld();
       }
     };

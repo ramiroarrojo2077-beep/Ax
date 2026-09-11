@@ -18,22 +18,26 @@ empaquetan como **APK de Android**.
   ruido fractal** (no es una imagen plana). Como la pista serpentea, el
   panorama se mueve de lado a lado mientras se va hacia adelante.
 - Pórtico de meta a cuadros cada 3 km: ahí se suma una vuelta.
+- Detalles en movimiento: peralte en las curvas, polvo al pisar el pasto,
+  humo de gomas al frenar fuerte, luz de freno, chispazo en los contactos y
+  cierre de cámara al superar los 180 km/h.
 
 ### Controles
 
-| Acción | Teclas |
-| --- | --- |
-| Acelerar | `↑` o `W` |
-| Frenar | `↓`, `S` o `espacio` |
-| Doblar | `←` `→` o `A` `D` |
-| Pausa | `P` o `Esc` |
-| Reiniciar | `R` |
-| Sonido | `M` |
+| Acción | Teclado | Joystick | Celular |
+| --- | --- | --- | --- |
+| Acelerar | `↑` / `W` | gatillo derecho o `A` | botón GAS |
+| Frenar | `↓` / `S` / espacio | gatillo izquierdo o `B` | botón FRENO |
+| Doblar | `←` `→` / `A` `D` | palanca izquierda (analógico) | flechas **o** arrastrar el dedo |
+| Pausa | `P` / `Esc` | Start | botón `II` |
+| Reiniciar | `R` | — | — |
+| Sonido | `M` | — | botón 🔊 |
 
-En celular aparecen botones en pantalla (izquierda/derecha y gas/freno).
-
-Si te vas al pasto perdés agarre y velocidad, así que hay que contravolantear
-en las curvas: cuanto más rápido, más empuja la curva hacia afuera.
+La dirección es progresiva y vuelve sola al centro; a alta velocidad responde
+menos, como un auto real. Si te vas al pasto perdés agarre y velocidad, y en
+los pianos el auto vibra pero todavía dobla. En las curvas la pista tiene
+peralte: ayuda, pero igual hay que contravolantear porque cuanto más rápido
+vas, más te empuja hacia afuera.
 
 ## Correrlo en la compu
 
@@ -85,6 +89,8 @@ css/style.css         interfaz: tablero, marcador, controles táctiles
 js/textures.js        texturas generadas por canvas (asfalto, pasto, público…)
 js/terrain.js         cordillera 3D con ruido fractal y calima horneada
 js/track.js           curvatura de la pista, cintas de asfalto y decorado
+js/input.js           teclado, joystick y controles táctiles
+js/fx.js              partículas de polvo, humo y contactos
 js/car.js             monoplaza, livery, piloto y ruedas
 js/sky.js             cielo, luces, sombras y mapa de reflejos
 js/game.js            física arcade, rivales, cámara, HUD y sonido

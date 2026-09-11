@@ -28,7 +28,10 @@
     <div class="panel tr">
       <div class="stat"><b id="passes">0</b><span>adelantamientos</span></div>
       <div class="stat"><b id="best">0</b><span>vel. máx</span></div>
-      <button id="mute" title="Sonido (M)">🔊</button>
+      <div class="btns">
+        <button id="pausebtn" title="Pausa (P)" aria-label="Pausa">II</button>
+        <button id="mute" title="Sonido (M)" aria-label="Sonido" aria-pressed="false">🔊</button>
+      </div>
     </div>
 
     <div id="dash">
@@ -39,6 +42,7 @@
       </div>
     </div>
 
+    <div id="rush" aria-hidden="true"></div>
     <div id="msg"></div>
 
     <div id="touch">
@@ -58,10 +62,11 @@
       <h1>GRAN PREMIO <span>3D</span></h1>
       <p class="tagline">Manejás el monoplaza celeste y rosa. Salís último: pasá a los 19 rivales rojos, negros y plateados sin irte al pasto.</p>
       <ul class="controls">
-        <li><kbd>↑</kbd> / <kbd>W</kbd> acelerar</li>
-        <li><kbd>↓</kbd> / <kbd>S</kbd> frenar</li>
+        <li><kbd>↑</kbd> / <kbd>W</kbd> acelerar · <kbd>↓</kbd> / <kbd>S</kbd> frenar</li>
         <li><kbd>←</kbd> <kbd>→</kbd> / <kbd>A</kbd> <kbd>D</kbd> doblar</li>
         <li><kbd>P</kbd> pausa · <kbd>R</kbd> reiniciar · <kbd>M</kbd> sonido</li>
+        <li>Joystick: gatillos para acelerar y frenar, palanca para doblar</li>
+        <li>Celular: botones en pantalla o arrastrar el dedo para doblar</li>
       </ul>
       <button id="startbtn">COMENZAR CARRERA</button>
       <p class="hint">En celular usá los botones de la pantalla.</p>
@@ -69,7 +74,9 @@
   </div>
 
   <script src="vendor/three.min.js"></script>
+  <script src="js/input.js"></script>
   <script src="js/textures.js"></script>
+  <script src="js/fx.js"></script>
   <script src="js/terrain.js"></script>
   <script src="js/track.js"></script>
   <script src="js/car.js"></script>

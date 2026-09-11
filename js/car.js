@@ -198,7 +198,7 @@ window.CarFactory = (function () {
     var diffuser = new THREE.Mesh(taper(1.15, 0.30, 1.0, 0.22, 0.6, 0.0, 0.06), darkMat);
     diffuser.position.set(0, 0.26, -2.3);
     g.add(diffuser);
-    var rearLight = box(0.12, 0.12, 0.06, new THREE.MeshBasicMaterial({ color: 0xff2a2a }), 0, 0.52, -2.66);
+    var rearLight = box(0.16, 0.13, 0.05, new THREE.MeshBasicMaterial({ color: 0x5c1418 }), 0, 0.52, -2.66);
     g.add(rearLight);
 
     // ---- piloto
@@ -322,7 +322,8 @@ window.CarFactory = (function () {
       body: g,
       wheels: [fl, fr, rl, rr],
       steered: [fl, fr],
-      helmet: helmet
+      helmet: helmet,
+      brakeLight: rearLight
     };
   }
 

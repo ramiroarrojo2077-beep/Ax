@@ -3,7 +3,8 @@ var CACHE = 'gp3d-v1';
 var FILES = [
   './', './index.html', './css/style.css',
   './vendor/three.min.js',
-  './js/textures.js', './js/terrain.js', './js/track.js',
+  './js/input.js', './js/textures.js', './js/fx.js',
+  './js/terrain.js', './js/track.js',
   './js/car.js', './js/sky.js', './js/game.js',
   './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png'

@@ -285,6 +285,19 @@ window.GFX = (function () {
     });
   }
 
+  /* Puf blanco y suave para polvo y humo (se tine por vertice). */
+  function puff() {
+    return memo('puff', function () {
+      var s = 64, c = canvas(s, s), g = c.getContext('2d');
+      var gr = g.createRadialGradient(s / 2, s / 2, 1, s / 2, s / 2, s / 2);
+      gr.addColorStop(0, 'rgba(255,255,255,0.95)');
+      gr.addColorStop(0.45, 'rgba(255,255,255,0.45)');
+      gr.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = gr; g.fillRect(0, 0, s, s);
+      return new THREE.CanvasTexture(c);
+    });
+  }
+
   function checker() {
     return memo('checker', function () {
       var s = 128, c = canvas(s, s), g = c.getContext('2d');
@@ -321,6 +334,7 @@ window.GFX = (function () {
 
   return {
     asphalt: asphalt, asphaltBump: asphaltBump, grass: grass, kerb: kerb,
-    wall: wall, crowd: crowd, sky: sky, blob: blob, checker: checker, plate: plate
+    wall: wall, crowd: crowd, sky: sky, blob: blob, puff: puff,
+    checker: checker, plate: plate
   };
 })();

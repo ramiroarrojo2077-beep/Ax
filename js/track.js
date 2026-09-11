@@ -43,6 +43,26 @@ window.Track = (function () {
     return s;
   }
 
+  /* Peralte: en las curvas la pista se inclina hacia adentro. El efecto se
+     desvanece hacia el pasto para que las vallas y tribunas no se muevan. */
+  var BANK_K = 130, BANK_MAX = 0.085;
+
+  function bankAt(z) {
+    var b = -curvatureAt(z) * BANK_K;
+    return b > BANK_MAX ? BANK_MAX : (b < -BANK_MAX ? -BANK_MAX : b);
+  }
+
+  function bankFalloff(lateral) {
+    var a = Math.abs(lateral);
+    if (a <= ROAD_HALF + KERB) return 1;
+    var f = 1 - (a - ROAD_HALF - KERB) / 12;
+    return f > 0 ? f : 0;
+  }
+
+  function surfaceY(lateral, z) {
+    return lateral * bankAt(z) * bankFalloff(lateral);
+  }
+
   // ---- marco local --------------------------------------------------------
   var dist = 0, x0 = 0, h0 = 0, cosH = 1, sinH = 0;
 
@@ -128,8 +148,10 @@ window.Track = (function () {
       toLocal(wz, this.a, _pa);
       toLocal(wz, this.b, _pb);
       var o = i * 6;
-      p[o] = _pa.x; p[o + 1] = this.ya; p[o + 2] = _pa.z;
-      p[o + 3] = _pb.x; p[o + 4] = this.yb; p[o + 5] = _pb.z;
+      var bank = surfaceY(this.a, wz);
+      var bankB = surfaceY(this.b, wz);
+      p[o] = _pa.x; p[o + 1] = this.ya + bank; p[o + 2] = _pa.z;
+      p[o + 3] = _pb.x; p[o + 4] = this.yb + bankB; p[o + 5] = _pb.z;
       var v = wz / this.uv;
       uv[i * 4 + 1] = v; uv[i * 4 + 3] = v;
     }
@@ -207,6 +229,24 @@ window.Track = (function () {
       cone.position.y = 3.4 + i * 1.5;
       g.add(cone);
     }
+    return g;
+  }
+
+  function buildFlagPole(color) {
+    var g = new THREE.Group();
+    var pole = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.07, 0.09, 6, 6),
+      new THREE.MeshLambertMaterial({ color: 0xd9dde2 })
+    );
+    pole.position.y = 3;
+    g.add(pole);
+    var flag = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.7, 1.1),
+      new THREE.MeshLambertMaterial({ color: color, side: THREE.DoubleSide })
+    );
+    flag.position.set(0.9, 5.2, 0);
+    g.add(flag);
+    g.userData.flag = flag;
     return g;
   }
 
@@ -290,6 +330,13 @@ window.Track = (function () {
       prop(tr, t * TREE_GAP + ((t * 13) % 30), lat, TREE_GAP * 34);
     }
 
+    var flagColors = [0x2ab6f0, 0xff4fa3, 0xf5b301, 0xe8ecf2];
+    var FLAG_GAP = 85;
+    for (var f = 0; f < 14; f++) {
+      var fp = buildFlagPole(flagColors[f % flagColors.length]);
+      prop(fp, f * FLAG_GAP + 30, (f % 2 ? 1 : -1) * (WALL_X + 4), FLAG_GAP * 14);
+    }
+
     var gantries = [];
     for (var q = 0; q < 2; q++) {
       var gt = buildGantry();
@@ -305,6 +352,8 @@ window.Track = (function () {
       curveX: curveX,
       slopeAt: slopeAt,
       curvatureAt: curvatureAt,
+      bankAt: bankAt,
+      surfaceY: surfaceY,
       setPlayer: setPlayer,
       toLocal: toLocal,
       heading: function () { return h0; },
@@ -316,7 +365,7 @@ window.Track = (function () {
           while (p.z - d < -120) p.z += p.spacing;
           while (p.z - d > SEGMENTS * SEG + p.spacing - 90) p.z -= p.spacing;
           toLocal(p.z, p.lat, tmp);
-          p.obj.position.set(tmp.x, 0, tmp.z);
+          p.obj.position.set(tmp.x, surfaceY(p.lat, p.z), tmp.z);
           p.obj.rotation.y = tmp.yaw + p.yawOff;
           p.obj.visible = tmp.z > -120 && tmp.z < 1200;
         }

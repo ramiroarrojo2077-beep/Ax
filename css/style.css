@@ -43,19 +43,25 @@ html, body {
 .panel.tr { top: 14px; right: 14px; border-right: 3px solid var(--rosa); }
 
 .stat { display: flex; flex-direction: column; align-items: center; line-height: 1; }
-.stat b { font-size: 26px; font-weight: 800; letter-spacing: 1px; }
+.stat b { font-size: 26px; font-weight: 800; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
 .stat span { margin-top: 5px; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: .62; }
 
-#mute {
+.btns { display: flex; gap: 6px; }
+.btns button {
   pointer-events: auto;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, .07);
   color: #fff;
-  font-size: 17px;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
   border-radius: 10px;
   width: 38px; height: 38px;
   cursor: pointer;
+  touch-action: manipulation;
 }
+.btns button:hover { background: rgba(255, 255, 255, .14); }
+.btns button:focus-visible { outline: 2px solid var(--celeste); outline-offset: 2px; }
 
 #dash {
   position: absolute;
@@ -116,11 +122,35 @@ html, body {
 
 body.offtrack #dash { box-shadow: 0 0 0 2px var(--rosa); }
 
+/* Halo de velocidad: se cierra la vista cuando el auto vuela. */
+#rush {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s linear;
+  background:
+    radial-gradient(ellipse 62% 58% at 50% 50%, rgba(0, 0, 0, 0) 55%, rgba(4, 10, 18, .55) 100%),
+    linear-gradient(90deg, rgba(42, 182, 240, .16), rgba(0, 0, 0, 0) 18%, rgba(0, 0, 0, 0) 82%, rgba(255, 79, 163, .16));
+}
+
+/* Pausa: se oscurece la escena. */
+body.paused::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 10, 18, .55);
+  pointer-events: none;
+  z-index: 5;
+}
+body.paused #msg { z-index: 6; }
+
 /* controles tactiles */
 #touch { position: absolute; inset: auto 0 0 0; display: none; justify-content: space-between; padding: 0 16px 18px; }
 #touch .pad { display: flex; gap: 12px; pointer-events: auto; }
 #touch button {
-  width: 74px; height: 74px;
+  width: 88px; height: 88px;
+  touch-action: none;
   border-radius: 50%;
   border: 1px solid var(--line);
   background: rgba(10, 18, 28, .6);
@@ -136,7 +166,7 @@ body.offtrack #dash { box-shadow: 0 0 0 2px var(--rosa); }
 
 @media (hover: none) and (pointer: coarse) {
   #touch { display: flex; }
-  #dash { bottom: 108px; min-width: 240px; padding: 10px 16px 12px; }
+  #dash { bottom: 120px; min-width: 240px; padding: 10px 16px 12px; }
   .speedbox b { font-size: 40px; }
   #revbar i { width: 9px; }
 }
@@ -203,3 +233,8 @@ kbd {
 }
 #startbtn:hover { filter: brightness(1.08); }
 .hint { margin: 12px 0 0; font-size: 11px; font-family: system-ui, sans-serif; opacity: .55; }
+
+
+@media (prefers-reduced-motion: reduce) {
+  #msg, #rush, #overlay { transition: none; }
+}
