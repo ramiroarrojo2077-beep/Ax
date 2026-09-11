@@ -57,8 +57,12 @@ horizontal y con aceleración por hardware (`android/`). El juego se copia solo
 a los assets del APK al compilar.
 
 **Opción 1 — GitHub Actions (no requiere instalar nada):** al pushear se
-ejecuta `.github/workflows/android.yml`, que compila `app-debug.apk` y lo deja
-como artefacto descargable de la ejecución (pestaña *Actions*).
+ejecuta `.github/workflows/android.yml`, que compila `app-debug.apk`,
+verifica que el juego haya quedado adentro y lo publica de dos formas:
+
+- como release fijo, para bajar directo desde el celular:
+  <https://github.com/ramiroarrojo2077-beep/Ax/releases/tag/apk-latest>
+- como artefacto de la ejecución, en la pestaña *Actions*.
 
 **Opción 2 — local**, con el SDK de Android instalado:
 
