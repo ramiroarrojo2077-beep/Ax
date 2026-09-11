@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Gran Premio 3D — Fórmula 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0a1420">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <canvas id="scene"></canvas>
+
+  <div id="hud">
+    <div class="panel tl">
+      <div class="stat"><b id="pos">P20</b><span>posición</span></div>
+      <div class="stat"><b id="lap">1</b><span>vuelta</span></div>
+    </div>
+
+    <div class="panel tr">
+      <div class="stat"><b id="passes">0</b><span>adelantamientos</span></div>
+      <div class="stat"><b id="best">0</b><span>vel. máx</span></div>
+      <button id="mute" title="Sonido (M)">🔊</button>
+    </div>
+
+    <div id="dash">
+      <div id="revbar"></div>
+      <div class="readout">
+        <div class="speedbox"><b id="speed">0</b><span>km/h</span></div>
+        <div class="gearbox"><b id="gear">1</b><span>marcha</span></div>
+      </div>
+    </div>
+
+    <div id="msg"></div>
+
+    <div id="touch">
+      <div class="pad left">
+        <button id="tc-left" aria-label="Izquierda">◀</button>
+        <button id="tc-right" aria-label="Derecha">▶</button>
+      </div>
+      <div class="pad right">
+        <button id="tc-brake" aria-label="Freno">FRENO</button>
+        <button id="tc-gas" aria-label="Acelerar">GAS</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="overlay">
+    <div class="card">
+      <h1>GRAN PREMIO <span>3D</span></h1>
+      <p class="tagline">Manejás el monoplaza celeste y rosa. Salís último: pasá a los 19 rivales rojos, negros y plateados sin irte al pasto.</p>
+      <ul class="controls">
+        <li><kbd>↑</kbd> / <kbd>W</kbd> acelerar</li>
+        <li><kbd>↓</kbd> / <kbd>S</kbd> frenar</li>
+        <li><kbd>←</kbd> <kbd>→</kbd> / <kbd>A</kbd> <kbd>D</kbd> doblar</li>
+        <li><kbd>P</kbd> pausa · <kbd>R</kbd> reiniciar · <kbd>M</kbd> sonido</li>
+      </ul>
+      <button id="startbtn">COMENZAR CARRERA</button>
+      <p class="hint">En celular usá los botones de la pantalla.</p>
+    </div>
+  </div>
+
+  <script src="vendor/three.min.js"></script>
+  <script src="js/textures.js"></script>
+  <script src="js/terrain.js"></script>
+  <script src="js/track.js"></script>
+  <script src="js/car.js"></script>
+  <script src="js/sky.js"></script>
+  <script src="js/game.js"></script>
+  <script>
+    // Instalable y jugable sin conexion (no aplica dentro del APK: file://)
+    if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>

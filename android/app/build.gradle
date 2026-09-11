@@ -1,0 +1,56 @@
+plugins {
+    id 'com.android.application'
+}
+
+/* El juego web (index.html, css, js, vendor, icons) se copia a los assets del
+   APK antes de compilar, asi no hay archivos duplicados en el repositorio. */
+def webRoot = rootProject.file('..')
+def webAssetsDir = layout.buildDirectory.dir('webapp').get().asFile
+
+tasks.register('copyWebApp', Copy) {
+    from(webRoot) {
+        include 'index.html'
+        include 'manifest.webmanifest'
+        include 'css/**'
+        include 'js/**'
+        include 'vendor/**'
+        include 'icons/**'
+    }
+    into webAssetsDir
+}
+
+tasks.matching { it.name == 'preBuild' }.configureEach { dependsOn 'copyWebApp' }
+tasks.matching { it.name.startsWith('merge') && it.name.endsWith('Assets') }.configureEach {
+    dependsOn 'copyWebApp'
+}
+
+android {
+    namespace 'com.granpremio.tresd'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.granpremio.tresd"
+        minSdk 23
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    sourceSets {
+        main {
+            assets.srcDirs += [webAssetsDir]
+        }
+    }
+}
