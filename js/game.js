@@ -384,23 +384,23 @@
         r.targetLat = r.lat;
         S.shake = 0.6;
         buzz([25, 30, 25]);
-        fx.burst(S.lat + dx * 0.5, 2.2, 10);
+        fx.burst(track.screenX(S.lat + dx * 0.5), 2.2, 10);
         message('¡CONTACTO!', 0.9);
       }
 
       track.toLocal(r.z, r.lat, tmp);
       r.car.root.position.set(tmp.x, track.surfaceY(r.lat, r.z), tmp.z);
       r.car.root.rotation.y = tmp.yaw;
-      r.car.root.rotation.z = Math.atan(track.bankAt(r.z));
+      r.car.root.rotation.z = -Math.atan(track.bankAt(r.z));
       r.car.root.visible = rel > -60 && rel < track.VIEW + 80;
       var spin = r.speed * dt / 0.36;
       for (var w = 0; w < r.car.wheels.length; w++) r.car.wheels[w].userData.spin.rotation.x += spin;
     }
 
     // ---- auto del jugador
-    player.root.position.set(S.lat, track.surfaceY(S.lat, S.dist), 0);
+    player.root.position.set(track.screenX(S.lat), track.surfaceY(S.lat, S.dist), 0);
     player.root.rotation.y = -Math.atan2(S.latVel, Math.max(12, S.speed)) * 0.85;
-    player.root.rotation.z = Math.atan(bank);
+    player.root.rotation.z = -Math.atan(bank);
     player.body.rotation.z = -S.steer * 0.035 - S.latVel * 0.004;
     player.body.rotation.x = (S.brake * 0.02 - S.throttle * 0.012) +
       ((S.offTrack || S.onKerb) ? Math.sin(S.time * 34) * 0.012 : 0);
@@ -409,19 +409,20 @@
 
     var pSpin = S.speed * dt / 0.36;
     for (var pw = 0; pw < player.wheels.length; pw++) player.wheels[pw].userData.spin.rotation.x += pSpin;
-    player.steered[0].rotation.y = S.steer * 0.30;
-    player.steered[1].rotation.y = S.steer * 0.30;
+    player.steered[0].rotation.y = -S.steer * 0.30;
+    player.steered[1].rotation.y = -S.steer * 0.30;
     if (player.brakeLight) {
       player.brakeLight.material.color.setHex(S.brake > 0.15 ? 0xff3b3b : 0x5c1418);
     }
 
     // ---- particulas
+    var carX = track.screenX(S.lat);
     if (S.offTrack && S.speed > 8) {
-      fx.dust(S.lat - 0.9, -1.6);
-      fx.dust(S.lat + 0.9, -1.6);
+      fx.dust(carX - 0.9, -1.6);
+      fx.dust(carX + 0.9, -1.6);
     } else if (S.brake > 0.5 && S.speed > 30) {
-      fx.smoke(S.lat - 0.9, -1.6);
-      fx.smoke(S.lat + 0.9, -1.6);
+      fx.smoke(carX - 0.9, -1.6);
+      fx.smoke(carX + 0.9, -1.6);
     }
     fx.update(dt, S.speed);
 
@@ -430,14 +431,14 @@
     var speedN = S.speed / MAX_SPEED;
     var shakeAmt = S.shake * 0.25 + (S.offTrack ? 0.05 : 0) +
       (S.onKerb ? 0.03 : 0) + speedN * 0.012;
-    var camX = S.lat * 0.82 + S.steer * 0.5;
+    var camX = track.screenX(S.lat * 0.82) - S.steer * 0.5;
     camera.position.x += (camX - camera.position.x) * Math.min(1, dt * 5);
     camera.position.y = 2.55 + track.surfaceY(S.lat, S.dist) + Math.sin(S.time * 30) * shakeAmt;
     camera.position.z = -8.6 - speedN * 1.2;
     camera.fov = 62 + speedN * 16;
     camera.updateProjectionMatrix();
-    camera.lookAt(S.lat * 0.45 + S.steer * 1.2, 1.25, 26);
-    camera.rotation.z += bank * 0.5 - S.steer * 0.012 + Math.sin(S.time * 22) * shakeAmt * 0.02;
+    camera.lookAt(track.screenX(S.lat * 0.45) - S.steer * 1.2, 1.25, 26);
+    camera.rotation.z += -bank * 0.5 + S.steer * 0.012 + Math.sin(S.time * 22) * shakeAmt * 0.02;
 
     sky.update(track.heading(), camera.position.x, camera.position.z);
 

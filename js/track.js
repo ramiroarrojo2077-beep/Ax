@@ -75,7 +75,10 @@ window.Track = (function () {
   }
 
   var _o = { x: 0, z: 0, yaw: 0 };
-  /* Convierte (metro de pista, desplazamiento lateral) a coordenadas locales. */
+  /* Convierte (metro de pista, desplazamiento lateral) a coordenadas de
+     pantalla. La camara mira hacia +Z, asi que su derecha es el -X del
+     mundo: por eso se invierte el eje X (y con el, el rumbo). Sin esa
+     inversion, doblar a la derecha movia el auto hacia la izquierda. */
   function toLocal(worldZ, lateral, out) {
     out = out || _o;
     var s = slopeAt(worldZ);
@@ -83,11 +86,14 @@ window.Track = (function () {
     var wx = curveX(worldZ) + lateral * inv;
     var wz = worldZ - lateral * s * inv;
     var dx = wx - x0, dz = wz - dist;
-    out.x = dx * cosH - dz * sinH;
+    out.x = -(dx * cosH - dz * sinH);
     out.z = dx * sinH + dz * cosH;
-    out.yaw = Math.atan(s) - h0;
+    out.yaw = -(Math.atan(s) - h0);
     return out;
   }
+
+  /* Posicion en pantalla de un desplazamiento lateral (derecha = positivo). */
+  function screenX(lateral) { return -lateral; }
 
   // ---- cintas -------------------------------------------------------------
   function Ribbon(opt) {
@@ -108,9 +114,15 @@ window.Track = (function () {
       var o = i * 2;
       idx.push(o, o + 2, o + 1, o + 1, o + 2, o + 3);
     }
+    this.swapUV = !!opt.swapUV;   // carteles: el dibujo corre a lo largo, no a lo alto
     for (var j = 0; j < n; j++) {
-      uvs[j * 4 + 0] = 0; uvs[j * 4 + 1] = 0;
-      uvs[j * 4 + 2] = this.uRep; uvs[j * 4 + 3] = 0;
+      if (this.swapUV) {
+        uvs[j * 4 + 0] = 0; uvs[j * 4 + 1] = 0;
+        uvs[j * 4 + 2] = 0; uvs[j * 4 + 3] = this.uRep;
+      } else {
+        uvs[j * 4 + 0] = 0; uvs[j * 4 + 1] = 0;
+        uvs[j * 4 + 2] = this.uRep; uvs[j * 4 + 3] = 0;
+      }
     }
     geo.setAttribute('position', new THREE.BufferAttribute(this.pos, 3));
     this.uvAttr = new THREE.BufferAttribute(uvs, 2);
@@ -153,7 +165,8 @@ window.Track = (function () {
       p[o] = _pa.x; p[o + 1] = this.ya + bank; p[o + 2] = _pa.z;
       p[o + 3] = _pb.x; p[o + 4] = this.yb + bankB; p[o + 5] = _pb.z;
       var v = wz / this.uv;
-      uv[i * 4 + 1] = v; uv[i * 4 + 3] = v;
+      if (this.swapUV) { uv[i * 4] = v; uv[i * 4 + 2] = v; }
+      else { uv[i * 4 + 1] = v; uv[i * 4 + 3] = v; }
     }
     this.geo.attributes.position.needsUpdate = true;
     this.uvAttr.needsUpdate = true;
@@ -299,8 +312,21 @@ window.Track = (function () {
     }));
 
     var wallTex = GFX.wall();
-    add(new Ribbon({ offsetA: -WALL_X, offsetB: -WALL_X, yA: 0, yB: 2.6, map: wallTex, uvScale: 30, uRepeat: 1, roughness: 0.7, receiveShadow: false }));
-    add(new Ribbon({ offsetA: WALL_X, offsetB: WALL_X, yA: 0, yB: 2.6, map: wallTex, uvScale: 30, uRepeat: 1, roughness: 0.7, receiveShadow: false }));
+    /* La valla de la izquierda se ve desde la cara opuesta: con la misma
+       textura los carteles saldrian al reves, asi que usa una copia
+       espejada. */
+    var wallTexFlip = wallTex.clone();
+    wallTexFlip.needsUpdate = true;
+    wallTexFlip.wrapS = wallTexFlip.wrapT = THREE.RepeatWrapping;
+    wallTexFlip.repeat.set(-1, 1);
+    add(new Ribbon({
+      offsetA: -WALL_X, offsetB: -WALL_X, yA: 0, yB: 2.6, map: wallTex,
+      uvScale: 52, uRepeat: 1, swapUV: true, roughness: 0.7, receiveShadow: false
+    }));
+    add(new Ribbon({
+      offsetA: WALL_X, offsetB: WALL_X, yA: 0, yB: 2.6, map: wallTexFlip,
+      uvScale: 52, uRepeat: 1, swapUV: true, roughness: 0.7, receiveShadow: false
+    }));
 
     // props reciclables
     var props = [];
@@ -316,7 +342,7 @@ window.Track = (function () {
     for (var i = 0; i < 8; i++) {
       var s = standProto.clone();
       var right = (i % 2 === 0);
-      prop(s, i * STAND_GAP, right ? WALL_X + 30 : -(WALL_X + 30), STAND_GAP * 8, right ? -Math.PI / 2 : Math.PI / 2);
+      prop(s, i * STAND_GAP, right ? WALL_X + 30 : -(WALL_X + 30), STAND_GAP * 8, right ? Math.PI / 2 : -Math.PI / 2);
     }
 
     var treeProto = buildTree();
@@ -354,6 +380,7 @@ window.Track = (function () {
       curvatureAt: curvatureAt,
       bankAt: bankAt,
       surfaceY: surfaceY,
+      screenX: screenX,
       setPlayer: setPlayer,
       toLocal: toLocal,
       heading: function () { return h0; },

@@ -74,7 +74,7 @@ window.Sky = (function () {
       ground: ground,
       sun: sun,
       update: function (heading, camX, camZ) {
-        group.rotation.y = -heading;
+        group.rotation.y = heading;   // el marco local esta espejado en X
         group.position.set(camX, 0, camZ);
         ground.position.x = camX;
         ground.position.z = camZ;
